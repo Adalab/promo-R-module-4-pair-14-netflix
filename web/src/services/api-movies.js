@@ -5,7 +5,6 @@ const getMoviesFromApi = () => {
   return fetch('http://localhost:4000/movies', { method: 'GET' })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       return data;
     });
 };
