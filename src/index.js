@@ -36,26 +36,37 @@ app.get('/movies', (req, res) => {
   const genderFilterParam = req.query.gender;
   const sortFilterParam = req.query.sort;
 
-  const moviesDataFiltered = moviesData.filter((eachMovie) => {
-    return eachMovie.gender.includes(genderFilterParam);
-  });
+  const moviesDataFiltered = moviesData
+    .filter((eachMovie) => {
+      return eachMovie.gender.includes(genderFilterParam);
+    })
+    .sort(() => {
+      if (sortFilterParam === 'asc') {
+        return moviesData.sort(asc);
+      } else if (sortFilterParam === 'desc') {
+        return moviesData.sort(desc);
+      } else {
+        return true;
+      }
+    });
 
   //Refactor and make sort when filtering
-  const moviesDataSort = () => {
-    if (sortFilterParam === 'asc') {
-      return moviesDataFiltered.sort(asc);
-    } else if (sortFilterParam === 'desc') {
-      return moviesDataFiltered.sort(desc);
-    } else {
-      return true;
-    }
-  };
+  // const moviesDataSort = () => {
+  //   if (sortFilterParam === 'asc') {
+  //     return moviesDataFiltered.sort(asc);
+  //   } else if (sortFilterParam === 'desc') {
+  //     return moviesDataFiltered.sort(desc);
+  //   } else {
+  //     return true;
+  //   }
+  // };
 
-  const moviesDataSorted = moviesDataSort();
+  // const moviesDataSorted = moviesDataSort();
+  console.log(moviesDataFiltered);
 
   res.json({
     success: true,
-    movies: moviesDataSorted,
+    movies: moviesDataFiltered,
   });
 });
 
