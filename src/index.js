@@ -59,5 +59,5 @@ app.get('/movies', (req, res) => {
   });
 });
 
-const staticServerPathWeb = './public-react';
+const staticServerPathWeb = 'src/public-react';
 app.use(express.static(staticServerPathWeb));
