@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const moviesData = require('./data/movies.json');
+const usersData = require('./data/users.json');
+
 // create and config server
 const app = express();
 app.use(cors());
@@ -59,5 +61,35 @@ app.get('/movies', (req, res) => {
   });
 });
 
+app.post('/users', (req, res) => {
+  const userLogin = req.body;
+  const foundUser = usersData.find((eachUser) => {
+    return (
+      eachUser.email === userLogin.email &&
+      eachUser.password === userLogin.password
+    );
+  });
+
+  const responseSuccess = {
+    success: true,
+    userId: 'id_de_la_usuaria_encontrada',
+  };
+
+  const responseFail = {
+    success: false,
+    errorMessage: 'Usuaria/o no encontrada/o',
+  };
+
+  if (foundUser) {
+    res.json(responseSuccess);
+  } else {
+    res.json(responseFail);
+  }
+});
+
+//servidores estaticos
 const staticServerPathWeb = 'src/public-react';
 app.use(express.static(staticServerPathWeb));
+
+const staticServerPathWeb2 = 'src/public-movies-images';
+app.use(express.static(staticServerPathWeb2));
