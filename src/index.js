@@ -14,6 +14,9 @@ app.listen(serverPort, () => {
   console.log(`Server listening at http://localhost:${serverPort}`);
 });
 
+//inicializar motor de plantillas
+app.set('view engine', 'ejs');
+
 function asc(a, b) {
   if (a.title < b.title) {
     return -1;
@@ -87,9 +90,20 @@ app.post('/users', (req, res) => {
   }
 });
 
+app.get('/movie/:movieId', (req, res) => {
+  const movieId = req.params.movieId;
+  const foundMovie = moviesData.find((eachMovie) => {
+    return eachMovie.id === movieId;
+  });
+  res.render('movie', foundMovie);
+});
+
 //servidores estaticos
 const staticServerPathWeb = 'src/public-react';
 app.use(express.static(staticServerPathWeb));
 
 const staticServerPathWeb2 = 'src/public-movies-images';
 app.use(express.static(staticServerPathWeb2));
+
+const staticServerPathWeb3 = 'src/public-css';
+app.use(express.static(staticServerPathWeb3));
