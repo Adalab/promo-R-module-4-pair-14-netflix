@@ -73,7 +73,6 @@ const App = () => {
   }, [userId]);
 
   useEffect(() => {
-    debugger;
     if (userId !== '') {
       ls.set('userId', userId);
     }
