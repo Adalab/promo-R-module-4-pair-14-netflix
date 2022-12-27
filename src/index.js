@@ -21,63 +21,70 @@ app.listen(serverPort, () => {
 //inicializar motor de plantillas
 app.set('view engine', 'ejs');
 
-function asc(a, b) {
-  if (a.name < b.name) {
-    return -1;
-  }
-  if (a.name > b.name) {
-    return 1;
-  }
-  return 0;
-}
+// function asc(a, b) {
+//   if (a.name < b.name) {
+//     return -1;
+//   }
+//   if (a.name > b.name) {
+//     return 1;
+//   }
+//   return 0;
+// }
 
-function desc(a, b) {
-  if (a.name > b.name) {
-    return -1;
-  }
-  if (a.name < b.name) {
-    return 1;
-  }
-  return 0;
-}
+// function desc(a, b) {
+//   if (a.name > b.name) {
+//     return -1;
+//   }
+//   if (a.name < b.name) {
+//     return 1;
+//   }
+//   return 0;
+// }
 
 app.get('/movies', (req, res) => {
   const genderFilterParam = req.query.gender;
   const sortFilterParam = req.query.sort;
 
-  // const moviesDataSort = () => {
-  //   if (sortFilterParam === 'asc') {
-  //     return moviesList.sort(asc);
-  //   } else if (sortFilterParam === 'desc') {
-  //     return moviesList.sort(desc);
-  //   } else {
-  //     return true;
-  //   }
-  // };
-
   if (genderFilterParam) {
-    const query = db.prepare('SELECT * FROM Movies WHERE gender = ?');
-    const moviesList = query.all(genderFilterParam);
-    const moviesFiltered = moviesList.sort(() => {
-      if (sortFilterParam === 'asc') {
-        return moviesList.sort(asc);
-      } else if (sortFilterParam === 'desc') {
-        return moviesList.sort(desc);
-      } else {
-        return true;
-      }
-    });
-    res.json({
-      success: true,
-      movies: moviesFiltered,
-    });
+    if (sortFilterParam === 'asc') {
+      const query = db.prepare(
+        'SELECT * FROM Movies WHERE gender = ? ORDER BY name ASC'
+      );
+      const moviesList = query.all(genderFilterParam);
+
+      res.json({
+        success: true,
+        movies: moviesList,
+      });
+    } else {
+      const query = db.prepare(
+        'SELECT * FROM Movies WHERE gender = ? ORDER BY name DESC'
+      );
+      const moviesList = query.all(genderFilterParam);
+
+      res.json({
+        success: true,
+        movies: moviesList,
+      });
+    }
   } else {
-    const query = db.prepare('SELECT * FROM Movies');
-    const moviesList = query.all();
-    res.json({
-      success: true,
-      movies: moviesList,
-    });
+    if (sortFilterParam === 'asc') {
+      const query = db.prepare('SELECT * FROM Movies ORDER BY name ASC');
+      const moviesList = query.all();
+
+      res.json({
+        success: true,
+        movies: moviesList,
+      });
+    } else {
+      const query = db.prepare('SELECT * FROM Movies ORDER BY name DESC');
+      const moviesList = query.all();
+
+      res.json({
+        success: true,
+        movies: moviesList,
+      });
+    }
   }
 
   // const moviesDataFiltered = moviesList.filter((eachMovie) => {
@@ -96,6 +103,13 @@ app.get('/movies', (req, res) => {
 
 app.post('/users', (req, res) => {
   const userLogin = req.body;
+
+  console.log(userLogin); //email and password
+
+  //Gestionar login users
+  const query = db.prepare('SELECT * FROM users');
+  const userSelected = query.get(userLogin);
+
   const foundUser = usersData.find((eachUser) => {
     return (
       eachUser.email === userLogin.email &&
@@ -122,10 +136,10 @@ app.post('/users', (req, res) => {
 
 app.get('/movie/:movieId', (req, res) => {
   const movieId = req.params.movieId;
-  const foundMovie = moviesData.find((eachMovie) => {
-    return eachMovie.id === movieId;
-  });
-  res.render('movie', foundMovie);
+
+  const query = db.prepare('SELECT * FROM Movies WHERE id = ?');
+  const movieSelected = query.get(movieId);
+  res.render('movie', movieSelected);
 });
 
 //servidores estaticos
