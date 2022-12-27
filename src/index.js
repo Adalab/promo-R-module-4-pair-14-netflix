@@ -4,43 +4,24 @@ const cors = require('cors');
 const usersData = require('./data/users.json');
 const Database = require('better-sqlite3');
 
-//Create database from SQlite browser database
+//Create database
 const db = new Database('./src/db/database2.db', { verbose: console.log });
 
-// create and config server
+//Create and config server
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// init express aplication
+//Init express aplication
 const serverPort = 4000;
 app.listen(serverPort, () => {
   console.log(`Server listening at http://localhost:${serverPort}`);
 });
 
-//inicializar motor de plantillas
+//init template engine
 app.set('view engine', 'ejs');
 
-// function asc(a, b) {
-//   if (a.name < b.name) {
-//     return -1;
-//   }
-//   if (a.name > b.name) {
-//     return 1;
-//   }
-//   return 0;
-// }
-
-// function desc(a, b) {
-//   if (a.name > b.name) {
-//     return -1;
-//   }
-//   if (a.name < b.name) {
-//     return 1;
-//   }
-//   return 0;
-// }
-
+//Endpoints
 app.get('/movies', (req, res) => {
   const genderFilterParam = req.query.gender;
   const sortFilterParam = req.query.sort;
@@ -86,19 +67,6 @@ app.get('/movies', (req, res) => {
       });
     }
   }
-
-  // const moviesDataFiltered = moviesList.filter((eachMovie) => {
-  //   return eachMovie.gender.includes(genderFilterParam);
-  // });
-
-  //Refactor and make sort when filtering
-
-  // const moviesDataSorted = moviesDataSort();
-
-  // res.json({
-  //   success: true,
-  //   movies: moviesList,
-  // });
 });
 
 app.post('/users', (req, res) => {
@@ -142,7 +110,7 @@ app.get('/movie/:movieId', (req, res) => {
   res.render('movie', movieSelected);
 });
 
-//servidores estaticos
+//Static servers
 const staticServerPathWeb = 'src/public-react';
 app.use(express.static(staticServerPathWeb));
 
