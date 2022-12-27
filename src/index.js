@@ -1,7 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const moviesData = require('./data/movies.json');
+// const moviesData = require('./data/movies.json');
 const usersData = require('./data/users.json');
+const Database = require('better-sqlite3');
+
+//Create database
+const db = new Database('./src/db/database.db', { verbose: console.log });
 
 // create and config server
 const app = express();
@@ -18,20 +22,20 @@ app.listen(serverPort, () => {
 app.set('view engine', 'ejs');
 
 function asc(a, b) {
-  if (a.title < b.title) {
+  if (a.name < b.name) {
     return -1;
   }
-  if (a.title > b.title) {
+  if (a.name > b.name) {
     return 1;
   }
   return 0;
 }
 
 function desc(a, b) {
-  if (a.title > b.title) {
+  if (a.name > b.name) {
     return -1;
   }
-  if (a.title < b.title) {
+  if (a.name < b.name) {
     return 1;
   }
   return 0;
@@ -41,27 +45,53 @@ app.get('/movies', (req, res) => {
   const genderFilterParam = req.query.gender;
   const sortFilterParam = req.query.sort;
 
-  const moviesDataFiltered = moviesData.filter((eachMovie) => {
-    return eachMovie.gender.includes(genderFilterParam);
-  });
+  // const moviesDataSort = () => {
+  //   if (sortFilterParam === 'asc') {
+  //     return moviesList.sort(asc);
+  //   } else if (sortFilterParam === 'desc') {
+  //     return moviesList.sort(desc);
+  //   } else {
+  //     return true;
+  //   }
+  // };
+
+  if (genderFilterParam) {
+    const query = db.prepare('SELECT * FROM Movies WHERE gender = ?');
+    const moviesList = query.all(genderFilterParam);
+    const moviesFiltered = moviesList.sort(() => {
+      if (sortFilterParam === 'asc') {
+        return moviesList.sort(asc);
+      } else if (sortFilterParam === 'desc') {
+        return moviesList.sort(desc);
+      } else {
+        return true;
+      }
+    });
+    res.json({
+      success: true,
+      movies: moviesFiltered,
+    });
+  } else {
+    const query = db.prepare('SELECT * FROM Movies');
+    const moviesList = query.all();
+    res.json({
+      success: true,
+      movies: moviesList,
+    });
+  }
+
+  // const moviesDataFiltered = moviesList.filter((eachMovie) => {
+  //   return eachMovie.gender.includes(genderFilterParam);
+  // });
 
   //Refactor and make sort when filtering
-  const moviesDataSort = () => {
-    if (sortFilterParam === 'asc') {
-      return moviesDataFiltered.sort(asc);
-    } else if (sortFilterParam === 'desc') {
-      return moviesDataFiltered.sort(desc);
-    } else {
-      return true;
-    }
-  };
 
-  const moviesDataSorted = moviesDataSort();
+  // const moviesDataSorted = moviesDataSort();
 
-  res.json({
-    success: true,
-    movies: moviesDataSorted,
-  });
+  // res.json({
+  //   success: true,
+  //   movies: moviesList,
+  // });
 });
 
 app.post('/users', (req, res) => {
