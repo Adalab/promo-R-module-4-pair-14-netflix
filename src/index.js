@@ -4,8 +4,8 @@ const cors = require('cors');
 const usersData = require('./data/users.json');
 const Database = require('better-sqlite3');
 
-//Create database
-const db = new Database('./src/db/database.db', { verbose: console.log });
+//Create database from SQlite browser database
+const db = new Database('./src/db/database2.db', { verbose: console.log });
 
 // create and config server
 const app = express();
@@ -48,7 +48,7 @@ app.get('/movies', (req, res) => {
   if (genderFilterParam) {
     if (sortFilterParam === 'asc') {
       const query = db.prepare(
-        'SELECT * FROM Movies WHERE gender = ? ORDER BY name ASC'
+        'SELECT * FROM movies WHERE gender = ? ORDER BY name ASC'
       );
       const moviesList = query.all(genderFilterParam);
 
@@ -58,7 +58,7 @@ app.get('/movies', (req, res) => {
       });
     } else {
       const query = db.prepare(
-        'SELECT * FROM Movies WHERE gender = ? ORDER BY name DESC'
+        'SELECT * FROM movies WHERE gender = ? ORDER BY name DESC'
       );
       const moviesList = query.all(genderFilterParam);
 
@@ -69,7 +69,7 @@ app.get('/movies', (req, res) => {
     }
   } else {
     if (sortFilterParam === 'asc') {
-      const query = db.prepare('SELECT * FROM Movies ORDER BY name ASC');
+      const query = db.prepare('SELECT * FROM movies ORDER BY name ASC');
       const moviesList = query.all();
 
       res.json({
@@ -77,7 +77,7 @@ app.get('/movies', (req, res) => {
         movies: moviesList,
       });
     } else {
-      const query = db.prepare('SELECT * FROM Movies ORDER BY name DESC');
+      const query = db.prepare('SELECT * FROM movies ORDER BY name DESC');
       const moviesList = query.all();
 
       res.json({
