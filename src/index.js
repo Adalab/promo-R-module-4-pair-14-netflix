@@ -77,19 +77,17 @@ app.post('/users', (req, res) => {
   );
   const userSelected = query.get(userLogin.email, userLogin.password);
 
-  const responseSuccess = {
-    success: true,
-    userId: userSelected.id,
-  };
-
-  const responseFail = {
-    success: false,
-    errorMessage: 'Usuaria/o ya registrada/o',
-  };
-
-  if (userSelected) {
+  if (userSelected !== undefined) {
+    const responseSuccess = {
+      success: true,
+      userId: userSelected.id,
+    };
     res.json(responseSuccess);
   } else {
+    const responseFail = {
+      success: false,
+      errorMessage: 'Usuaria/o ya registrada/o',
+    };
     res.json(responseFail);
   }
 });
@@ -105,7 +103,7 @@ app.post('/signup', (req, res) => {
   if (foundUser) {
     const responseFail = {
       success: false,
-      errorMessage: 'Usuaria/o no encontrada/o',
+      errorMessage: 'Usuaria/o registrada/o',
     };
     res.json(responseFail);
   } else {
