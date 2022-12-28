@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 // const moviesData = require('./data/movies.json');
-const usersData = require('./data/users.json');
+// const usersData = require('./data/users.json');
 const Database = require('better-sqlite3');
 
 //Create database
@@ -72,22 +72,17 @@ app.get('/movies', (req, res) => {
 app.post('/users', (req, res) => {
   const userLogin = req.body;
 
-  console.log(userLogin); //email and password
+  //console.log(userLogin); email and password
 
   //Gestionar login users
-  const query = db.prepare('SELECT * FROM users');
-  const userSelected = query.get(userLogin);
-
-  const foundUser = usersData.find((eachUser) => {
-    return (
-      eachUser.email === userLogin.email &&
-      eachUser.password === userLogin.password
-    );
-  });
+  const query = db.prepare(
+    'SELECT * FROM users WHERE email = ? AND password = ? '
+  );
+  const userSelected = query.get(userLogin.email, userLogin.password);
 
   const responseSuccess = {
     success: true,
-    userId: 'id_de_la_usuaria_encontrada',
+    userId: userSelected.id,
   };
 
   const responseFail = {
@@ -95,16 +90,43 @@ app.post('/users', (req, res) => {
     errorMessage: 'Usuaria/o no encontrada/o',
   };
 
-  if (foundUser) {
+  if (userSelected) {
     res.json(responseSuccess);
   } else {
     res.json(responseFail);
   }
 });
 
+app.post('/sign-up', (req, res) => {
+  const userSignUp = req.body;
+  //console.log(userLogin); email and password
+  //Gestionar login users
+
+  //verificar si ya existe
+  const query1 = db.prepare('SELECT * FROM users WHERE email = ?');
+  const foundUser = query1.get(userSignUp.email);
+  if (foundUser) {
+    const responseFail = {
+      success: false,
+      errorMessage: 'Usuaria/o no encontrada/o',
+    };
+    res.json(responseFail);
+  } else {
+    //insertar nueva usuaria
+    const query2 = db.prepare(
+      'INSERT INTO users (email, password) VALUES ( ?,?) '
+    );
+    const userRegistered = query2.run(userSignUp.email, userSignUp.password);
+    const responseSuccess = {
+      success: true,
+      userId: userRegistered.lastInsterRowid,
+    };
+    res.json(responseSuccess);
+  }
+});
+
 app.get('/movie/:movieId', (req, res) => {
   const movieId = req.params.movieId;
-
   const query = db.prepare('SELECT * FROM Movies WHERE id = ?');
   const movieSelected = query.get(movieId);
   res.render('movie', movieSelected);
