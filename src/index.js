@@ -86,7 +86,7 @@ app.post('/users', (req, res) => {
   } else {
     const responseFail = {
       success: false,
-      errorMessage: 'Usuaria/o ya registrada/o',
+      errorMessage: 'Usuaria/o no encontrada/o',
     };
     res.json(responseFail);
   }
@@ -103,7 +103,7 @@ app.post('/signup', (req, res) => {
   if (foundUser) {
     const responseFail = {
       success: false,
-      errorMessage: 'Usuaria/o registrada/o',
+      errorMessage: 'Usuaria/o ya registrada/o',
     };
     res.json(responseFail);
   } else {
