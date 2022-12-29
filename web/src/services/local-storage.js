@@ -11,9 +11,14 @@ const set = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
+const clear = () => {
+  localStorage.clear();
+};
+
 const objToExport = {
   get: get,
-  set: set
+  set: set,
+  clear: clear,
 };
 
 export default objToExport;
